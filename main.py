@@ -1,7 +1,3 @@
-"""
-Rainfall Forecast Model v2 (Tkinter GUI with Date column displayed)
-"""
-
 import os
 import numpy as np
 import pandas as pd
@@ -11,8 +7,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 import tkinter as tk
 from tkinter import ttk
 import joblib
-
-# Optional: Keras for LSTM
 try:
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense, Dropout
@@ -20,8 +14,6 @@ try:
     KERAS_AVAILABLE = True
 except ImportError:
     KERAS_AVAILABLE = False
-
-# ------------------------ Data Preparation ------------------------
 
 def ensure_datetime_index(df, date_col='date', freq='D'):
     df = df.copy()
@@ -56,8 +48,6 @@ def prepare_data(df, lags=[1,2,3,7,14,30], rolling_windows=[3,7,14]):
     y = df['rainfall']
     return X, y, df
 
-# ------------------------ Random Forest Model ------------------------
-
 def train_random_forest(X, y, test_size=0.2, random_state=42):
     split_idx = int(len(X)*(1-test_size))
     X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
@@ -75,8 +65,6 @@ def train_random_forest(X, y, test_size=0.2, random_state=42):
     rmse = np.sqrt(mean_squared_error(y_test, preds))
 
     return model, scaler, mae, rmse
-
-# ------------------------ Forecast Function ------------------------
 
 def forecast_next_days(df_full, model, scaler=None, days=30):
     df = df_full.copy()
@@ -124,8 +112,6 @@ def forecast_next_days(df_full, model, scaler=None, days=30):
     forecast_df.set_index('Date', inplace=True)
     return forecast_df
 
-# ------------------------ Tkinter GUI ------------------------
-
 def show_forecast_gui(forecast_df):
     root = tk.Tk()
     root.title('Rainfall Forecast')
@@ -142,8 +128,6 @@ def show_forecast_gui(forecast_df):
     tree.pack(expand=True, fill=tk.BOTH)
     root.mainloop()
 
-# ------------------------ LSTM Helper Functions ------------------------
-
 def make_lstm_train_data(df, feature_cols, target_col='rainfall', lookback=30):
     values = df[feature_cols + [target_col]].values
     if len(values) <= lookback:
@@ -153,8 +137,6 @@ def make_lstm_train_data(df, feature_cols, target_col='rainfall', lookback=30):
         X.append(values[i-lookback:i, :-1])
         y.append(values[i, -1])
     return np.array(X), np.array(y)
-
-# ------------------------ Main ------------------------
 
 if __name__ == '__main__':
     if os.path.exists('weather.csv'):
@@ -166,8 +148,8 @@ if __name__ == '__main__':
 
         forecast = forecast_next_days(df_full, rf_model, scaler=scaler, days=30)
 
-        # Show forecast in GUI
         show_forecast_gui(forecast)
 
     else:
         print('Please provide weather.csv with columns: date,rainfall,temperature,humidity,windspeed')
+
