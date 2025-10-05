@@ -1,1 +1,1 @@
-Run run.bat to execute files.
+**Weather Calculator**
